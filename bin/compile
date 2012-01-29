@@ -50,7 +50,7 @@ DESTDIR=/app/.tools/debootstrap fakeroot make
 DESTDIR=/app/.tools/debootstrap fakeroot make install
 echo "... debootstrap installed!" | indent
 
-echo "-----> Fetching, installing and vendoring chroot into /app/.tools/fakechroot/"
+echo "-----> Fetching, installing and vendoring fakechroot into /app/.tools/fakechroot/"
 cd $FAKECHROOT_BUILD
 git clone git://github.com/fabiokung/fakechroot.git
 cd fakechroot
