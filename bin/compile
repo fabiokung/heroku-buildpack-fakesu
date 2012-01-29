@@ -46,8 +46,8 @@ cd $DEBOOTSTRAP_BUILD
 wget http://archive.ubuntu.com/ubuntu/pool/main/d/debootstrap/debootstrap_1.0.38.tar.gz
 tar zxvf debootstrap_1.0.38.tar.gz
 cd debootstrap
-DESTDIR=/app/.tools/debootstrap fakeroot make
-DESTDIR=/app/.tools/debootstrap fakeroot make install
+DESTDIR=$CACHE_DIR/.tools/debootstrap fakeroot make
+DESTDIR=$CACHE_DIR/.tools/debootstrap fakeroot make install
 echo "... debootstrap installed!" | indent
 
 echo "-----> Fetching, installing and vendoring fakechroot into /app/.tools/fakechroot/"
