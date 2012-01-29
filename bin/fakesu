@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+
+/app/tools/fakechroot/sbin/fakechroot /usr/sbin/fakeroot /sbin/chroot /app/.root $@
+

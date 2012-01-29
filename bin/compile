@@ -1,0 +1,85 @@
+#!/usr/bin/env bash
+# bin/compile <build-dir> <cache-dir>
+
+mktmpdir() {
+  dir=$(mktemp -t fakesu-$1-XXXX)
+  rm -rf $dir
+  mkdir -p $dir
+  echo $dir
+}
+
+function indent() {
+  c='s/^/       /'
+  case $(uname) in
+    Darwin) sed -l "$c";;
+    *)      sed -u "$c";;
+  esac
+}
+
+BUILDPACK_DIR=`cd $(dirname $0); cd ..; pwd`
+BUILD_DIR=$1
+CACHE_DIR=$2
+
+WGET_BUILD="$(mktmpdir wget)"
+DEBOOTSTRAP_BUILD="$(mktmpdir debootstrap)"
+FAKECHROOT_BUILD="$(mktmpdir fakechroot)"
+
+mkdir -p $BUILD_DIR/.tools/fakechroot
+mkdir -p $CACHE_DIR/.tools/{wget,debootstrap}
+
+PATH=/sbin:/usr/sbin:$PATH:$CACHE_DIR/.tools/wget/bin:$CACHE_DIR/.tools/debootstrap/usr/sbin:$BUILD_DIR/.tools/fakechroot/sbin:$BUILD_DIR/.tools/fakechroot/bin
+DEBOOTSTRAP_DIR=$CACHE_DIR/.tools/debootstrap/usr/share/debootstrap
+
+echo "-----> Fetching and installing wget..."
+cd $WGET_BUILD
+curl -O http://ftp.gnu.org/gnu/wget/wget-1.13.4.tar.bz2
+tar jxvf wget-1.13.4.tar.bz2
+cd wget-1.13.4
+./configure --prefix=$CACHE_DIR/wget --without-ssl
+make
+make install
+echo "... wget installed!" | indent
+
+echo "-----> Fetching and installing debootstrap..."
+cd $DEBOOTSTRAP_BUILD
+wget http://archive.ubuntu.com/ubuntu/pool/main/d/debootstrap/debootstrap_1.0.38.tar.gz
+tar zxvf debootstrap_1.0.38.tar.gz
+cd debootstrap
+DESTDIR=/app/.tools/debootstrap fakeroot make
+DESTDIR=/app/.tools/debootstrap fakeroot make install
+echo "... debootstrap installed!" | indent
+
+echo "-----> Fetching, installing and vendoring debootstrap into /app/.tools/fakechroot/"
+cd $FAKECHROOT_BUILD
+git clone git://github.com/fabiokung/fakechroot.git
+cd fakechroot
+./autogen.sh
+./configure --prefix=$BUILD_DIR/.tools/fakechroot
+make
+make install
+echo "... fakechroot vendored!" | indent
+
+cd $BUILDPACK_DIR
+echo "-----> Bootstraping a new base ubuntu lucid into /app/.root/"
+mkdir $BUILD_DIR/.root
+fakechroot -s fakeroot debootstrap --no-check-gpg --variant=fakechroot lucid $BUILD_DIR/.root
+fakechroot fakeroot chroot $BUILD_DIR/.root apt-get install gpgv
+
+echo "Updating packages" | indent
+fakechroot fakeroot chroot $BUILD_DIR/.root bash -c "cat > /etc/apt/sources.list <<EOF
+deb http://archive.ubuntu.com/ubuntu lucid main
+deb http://archive.ubuntu.com/ubuntu lucid-security main
+deb http://archive.ubuntu.com/ubuntu lucid-updates main
+deb http://archive.ubuntu.com/ubuntu lucid universe
+EOF
+"
+echo "/app/.root bootstraped" | indent
+
+fakechroot fakeroot chroot $BUILD_DIR/.root apt-get update
+
+cd $BUILD_DIR/.root
+ln -s ../ app
+
+cd $BUILDPACK_DIR
+exit 0
+
