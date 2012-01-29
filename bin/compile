@@ -61,7 +61,7 @@ echo "... fakechroot vendored!" | indent
 
 cd $BUILDPACK_DIR
 echo "-----> Bootstraping a new base ubuntu lucid into /app/.root/"
-mkdir $BUILD_DIR/.root
+mkdir -p $BUILD_DIR/.root
 fakechroot -s fakeroot debootstrap --no-check-gpg --variant=fakechroot lucid $BUILD_DIR/.root
 fakechroot fakeroot chroot $BUILD_DIR/.root apt-get install gpgv
 
@@ -82,4 +82,7 @@ ln -s ../ app
 
 cd $BUILDPACK_DIR
 exit 0
+
+mkdir -p $BUILD_DIR/bin
+cp $BUILDPACK_DIR/bin/fakesu $BUILD_DIR/bin
 
