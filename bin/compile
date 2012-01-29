@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 # bin/compile <build-dir> <cache-dir>
+set -e
 
 mktmpdir() {
   dir=$(mktemp -t fakesu-$1-XXXX)
@@ -27,7 +28,7 @@ FAKECHROOT_BUILD="$(mktmpdir fakechroot)"
 mkdir -p $BUILD_DIR/.tools/fakechroot
 mkdir -p $CACHE_DIR/.tools/{wget,debootstrap}
 
-PATH=/sbin:/usr/sbin:$PATH:$CACHE_DIR/.tools/wget/bin:$CACHE_DIR/.tools/debootstrap/usr/sbin:$BUILD_DIR/.tools/fakechroot/sbin:$BUILD_DIR/.tools/fakechroot/bin
+export PATH=/sbin:/usr/sbin:$PATH:$CACHE_DIR/.tools/wget/bin:$CACHE_DIR/.tools/debootstrap/usr/sbin:$BUILD_DIR/.tools/fakechroot/sbin:$BUILD_DIR/.tools/fakechroot/bin
 DEBOOTSTRAP_DIR=$CACHE_DIR/.tools/debootstrap/usr/share/debootstrap
 
 echo "-----> Fetching and installing wget..."
@@ -49,7 +50,7 @@ DESTDIR=/app/.tools/debootstrap fakeroot make
 DESTDIR=/app/.tools/debootstrap fakeroot make install
 echo "... debootstrap installed!" | indent
 
-echo "-----> Fetching, installing and vendoring debootstrap into /app/.tools/fakechroot/"
+echo "-----> Fetching, installing and vendoring chroot into /app/.tools/fakechroot/"
 cd $FAKECHROOT_BUILD
 git clone git://github.com/fabiokung/fakechroot.git
 cd fakechroot
