@@ -1,6 +1,6 @@
 # (fake) su
 
-Heroku buildpack creates a chroot jail, and allows regular users to run commands as (fake)**root** inside it.
+Heroku buildpack that creates a chroot jail, and allows users to run commands as (fake)**root** inside it.
 
 
 ## Usage
