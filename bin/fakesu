@@ -1,4 +1,5 @@
 #!/usr/bin/env bash
+# bin/fakesu [-c <command>]
 
 command="/bin/bash"
 while [ $# -gt 0 ]; do
