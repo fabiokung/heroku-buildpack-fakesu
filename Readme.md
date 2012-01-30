@@ -1,6 +1,6 @@
 # (fake) su
 
-Heroku buildpack that allows regular users to run commands as (fake)root, creating a chroot jail.
+Heroku buildpack creates a chroot jail, and allows regular users to run commands as (fake)**root** inside it.
 
 
 ## Usage
@@ -67,8 +67,6 @@ e.g.: a different version of ruby:
     (dyno)# cd ruby-1.9.2-pXXX
 
     (dyno)# ./configure --prefix=/usr/local optflags="-O3" debugflags="-g3 -ggdb"
-    some rubies are failing to compile (segfault) with gcc >= 4.4
-    if it is your case, use CC=gcc-4.3 ./configure ...
 
     (dyno)# make
 
@@ -77,30 +75,33 @@ e.g.: a different version of ruby:
 
 ### Because I have system dependencies (e.g. libzmq-dev)
 
-    # cat Gemfile
+    $ heroku run console
+    
+    (dyno)# cat Gemfile
     source :rubygems
     gem "zmq"
     ...
 
-    # echo "deb http://ppa.launchpad.net/chris-lea/libpgm/ubuntu lucid main" >> /etc/apt/sources.list
+    (dyno)# echo "deb http://ppa.launchpad.net/chris-lea/libpgm/ubuntu lucid main" >> /etc/apt/sources.list
 
-    # echo "deb http://ppa.launchpad.net/chris-lea/zeromq/ubuntu lucid main" >> /etc/apt/sources.list
+    (dyno)# echo "deb http://ppa.launchpad.net/chris-lea/zeromq/ubuntu lucid main" >> /etc/apt/sources.list
 
-    # apt-get update
+    (dyno)# apt-get update
 
-    # apt-get install libzmq-dbg libzmq-dev libzmq1
+    (dyno)# apt-get install libzmq-dbg libzmq-dev libzmq1
 
-    # bundle install
+    (dyno)# bundle install
+    Fetching source index for http://rubygems.org/
+    ...
+    Installing zmq (2.1.4) with native extensions 
+    Using bundler (1.0.21) 
 
 In this case, your application processes (Procfile) would need to be started inside the chroot jail, where the system dependencies were installed.
 
 `fakesu -c` can be used for that, e.g.: `fakesu -c bundle exec thin -p $PORT ...`
 
 
-### Because I want to be the (fake)root of my dyno :)
-
-
-### (bonus) Because I want to install and run **services**
+### Because I want to install and run **services**
 
     $ heroku run console
 
@@ -112,10 +113,15 @@ In this case, your application processes (Procfile) would need to be started ins
     (dyno)# vim /etc/nginx/sites-available/default
     edit the "listen 80" line and change it to the port given by the previous command
 
-    (dyno)# vim /etc/init.d/nginx restart
+    (dyno)# /etc/init.d/nginx restart
 
 
 Using another terminal, it is now possible to [create routes](https://github.com/JacobVorreuter/heroku-routing):
+
+    $ heroku ps
+    Process  State      Command  
+    -------  ---------  -------  
+    run.1    up for 1m  bash    
 
     $ heroku routes:create
     Creating route... done
@@ -124,4 +130,7 @@ Using another terminal, it is now possible to [create routes](https://github.com
     $ heroku routes:attach tcp://route.heroku.com:28392 run.1
 
     $ open http://route.heroku.com:28392
+
+
+### Because I want to be the (fake)root of my dyno :)
 
