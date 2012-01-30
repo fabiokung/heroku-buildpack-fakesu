@@ -1,7 +1,13 @@
 #!/usr/bin/env bash
 # bin/fakesu [-c <command>]
 
-command="/bin/bash"
+olddir=`pwd`
+ROOT_DIR=`cd $(dirname $0); cd ../.root; pwd`
+TOOLS_DIR=`cd $(dirname $0); cd ../.tools; pwd`
+FAKECHROOT_DIR=$TOOLS_DIR/fakechroot
+cd $olddir
+
+command="/bin/bash --rcfile $ROOT_DIR/root/.bashrc"
 while [ $# -gt 0 ]; do
     echo $#
     if [ "-c" == $1 ]; then
@@ -12,12 +18,6 @@ while [ $# -gt 0 ]; do
         shift
     fi
 done
-
-olddir=`pwd`
-ROOT_DIR=`cd $(dirname $0); cd ../.root; pwd`
-TOOLS_DIR=`cd $(dirname $0); cd ../.tools; pwd`
-FAKECHROOT_DIR=$TOOLS_DIR/fakechroot
-cd $olddir
 
 $FAKECHROOT_DIR/bin/fakechroot -l $FAKECHROOT_DIR/lib/fakechroot/libfakechroot.so /usr/bin/fakeroot /usr/sbin/chroot $ROOT_DIR $command
 
