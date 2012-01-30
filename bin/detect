@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # bin/detect <build-dir>
 
-echo "fakesu environment"
+echo "fakesu"
 exit 0
 
