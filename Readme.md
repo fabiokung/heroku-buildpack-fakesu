@@ -132,7 +132,7 @@ Using another terminal, it is now possible to [create routes](https://github.com
     $ open http://route.heroku.com:28392
 
 
-### Because it can be composed with other buildpacks
+### Because it can be combined with other buildpacks
 
 TODO, using the [heroku-multi-buildpack](https://github.com/ddollar/heroku-buildpack-multi)
 
