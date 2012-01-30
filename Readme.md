@@ -1,4 +1,4 @@
-# Heroku buildpack: fakesu
+# (fake) su
 
 Heroku buildpack that allows regular users to run commands as (fake)root, creating a chroot jail.
 
