@@ -67,6 +67,8 @@ fakechroot -s fakeroot debootstrap --no-check-gpg --variant=fakechroot lucid $BU
 fakechroot fakeroot chroot $BUILD_DIR/.root apt-get install -y --force-yes gpgv >/dev/null 2>&1
 echo "/app/.root bootstraped" | indent
 
+sed -i -e "s/#force_color_prompt=yes/force_color_prompt=yes/" $BUILD_DIR/.root/root/.bashrc
+
 echo "-----> Updating packages"
 fakechroot fakeroot chroot $BUILD_DIR/.root bash -c "cat > /etc/apt/sources.list <<EOF
 deb http://archive.ubuntu.com/ubuntu lucid main universe
