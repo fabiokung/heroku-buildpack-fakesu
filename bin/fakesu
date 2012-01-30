@@ -14,9 +14,10 @@ while [ $# -gt 0 ]; do
 done
 
 olddir=`pwd`
-TOOLS_DIR=`cd $(dirname $0); cd ../.tools; pwd`
 ROOT_DIR=`cd $(dirname $0); cd ../.root; pwd`
+TOOLS_DIR=`cd $(dirname $0); cd ../.tools; pwd`
+FAKECHROOT_DIR=$TOOLS_DIR/fakechroot
 cd $olddir
 
-$TOOLS_DIR/fakechroot/sbin/fakechroot /usr/bin/fakeroot /usr/sbin/chroot $ROOT_DIR $command
+$FAKECHROOT_DIR/bin/fakechroot -l $FAKECHROOT_DIR/lib/fakechroot/libfakechroot.so /usr/bin/fakeroot /usr/sbin/chroot $ROOT_DIR $command
 
