@@ -81,9 +81,8 @@ fakechroot fakeroot chroot $BUILD_DIR/.root apt-get update
 cd $BUILD_DIR/.root
 ln -s ../ app
 
-cd $BUILDPACK_DIR
-exit 0
-
 mkdir -p $BUILD_DIR/bin
 cp $BUILDPACK_DIR/bin/fakesu $BUILD_DIR/bin
+
+exit 0
 

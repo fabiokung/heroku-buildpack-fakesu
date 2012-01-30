@@ -1,4 +1,21 @@
 #!/usr/bin/env bash
 
-/app/tools/fakechroot/sbin/fakechroot /usr/sbin/fakeroot /sbin/chroot /app/.root $@
+command="/bin/bash"
+while [ $# -gt 0 ]; do
+    echo $#
+    if [ "-c" == $1 ]; then
+        shift
+        command="$@"
+        break
+    else
+        shift
+    fi
+done
+
+olddir=`pwd`
+TOOLS_DIR=`cd $(dirname $0); cd ../.tools; pwd`
+ROOT_DIR=`cd $(dirname $0); cd ../.root; pwd`
+cd $olddir
+
+$TOOLS_DIR/fakechroot/sbin/fakechroot /usr/bin/fakeroot /usr/sbin/chroot $ROOT_DIR $command
 
