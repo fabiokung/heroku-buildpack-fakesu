@@ -132,5 +132,10 @@ Using another terminal, it is now possible to [create routes](https://github.com
     $ open http://route.heroku.com:28392
 
 
+### Because it can be composed with other buildpacks
+
+TODO, using the [heroku-multi-buildpack](https://github.com/ddollar/heroku-buildpack-multi)
+
+
 ### Because I want to be the (fake)root of my dyno :)
 
