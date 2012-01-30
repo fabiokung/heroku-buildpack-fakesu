@@ -31,60 +31,52 @@ mkdir -p $CACHE_DIR/.tools/{wget,debootstrap}
 export PATH=/sbin:/usr/sbin:$PATH:$CACHE_DIR/.tools/wget/bin:$CACHE_DIR/.tools/debootstrap/usr/sbin:$BUILD_DIR/.tools/fakechroot/sbin:$BUILD_DIR/.tools/fakechroot/bin
 export DEBOOTSTRAP_DIR=$CACHE_DIR/.tools/debootstrap/usr/share/debootstrap
 
-echo "-----> Fetching and installing wget..."
+echo "-----> Fetching and installing wget"
 cd $WGET_BUILD
-curl -O http://ftp.gnu.org/gnu/wget/wget-1.13.4.tar.bz2 >/dev/null
-tar jxvf wget-1.13.4.tar.bz2 >/dev/null
+curl -O http://ftp.gnu.org/gnu/wget/wget-1.13.4.tar.bz2 >/dev/null 2>&1
+tar jxvf wget-1.13.4.tar.bz2 >/dev/null 2>&1
 cd wget-1.13.4
-./configure --prefix=$CACHE_DIR/.tools/wget --without-ssl >/dev/null
-make >/dev/null
-make install >/dev/null
-echo "... wget installed!" | indent
+./configure --prefix=$CACHE_DIR/.tools/wget --without-ssl >/dev/null 2>&1
+make >/dev/null 2>&1
+make install >/dev/null 2>&1
+echo "wget installed" | indent
 
-echo "-----> Fetching and installing debootstrap..."
+echo "-----> Fetching and installing debootstrap"
 cd $DEBOOTSTRAP_BUILD
-wget http://archive.ubuntu.com/ubuntu/pool/main/d/debootstrap/debootstrap_1.0.38.tar.gz >/dev/null
+wget http://archive.ubuntu.com/ubuntu/pool/main/d/debootstrap/debootstrap_1.0.38.tar.gz >/dev/null 2>&1
 tar zxvf debootstrap_1.0.38.tar.gz >/dev/null
 cd debootstrap
 DESTDIR=$CACHE_DIR/.tools/debootstrap fakeroot make >/dev/null
 DESTDIR=$CACHE_DIR/.tools/debootstrap fakeroot make install >/dev/null
-echo "... debootstrap installed!" | indent
+echo "debootstrap installed" | indent
 
 echo "-----> Fetching, installing and vendoring fakechroot into /app/.tools/fakechroot/"
 cd $FAKECHROOT_BUILD
 git clone git://github.com/fabiokung/fakechroot.git >/dev/null
 cd fakechroot
-./autogen.sh >/dev/null
+./autogen.sh >/dev/null 2>&1
 ./configure --prefix=$BUILD_DIR/.tools/fakechroot >/dev/null
 make >/dev/null
 make install >/dev/null
-echo "... fakechroot vendored!" | indent
+echo "fakechroot vendored" | indent
 
 cd $BUILDPACK_DIR
 echo "-----> Bootstraping a new base ubuntu lucid into /app/.root/"
 mkdir -p $BUILD_DIR/.root
 fakechroot -s fakeroot debootstrap --no-check-gpg --variant=fakechroot lucid $BUILD_DIR/.root >/dev/null
-fakechroot fakeroot chroot $BUILD_DIR/.root apt-get install -y --force-yes gpgv >/dev/null
+fakechroot fakeroot chroot $BUILD_DIR/.root apt-get install -y --force-yes gpgv >/dev/null 2>&1
 echo "/app/.root bootstraped" | indent
 
-echo "Updating packages" | indent
+echo "-----> Updating packages"
 fakechroot fakeroot chroot $BUILD_DIR/.root bash -c "cat > /etc/apt/sources.list <<EOF
 deb http://archive.ubuntu.com/ubuntu lucid main universe
 deb http://archive.ubuntu.com/ubuntu lucid-security main
 deb http://archive.ubuntu.com/ubuntu lucid-updates main
 deb http://archive.ubuntu.com/ubuntu lucid-backports main universe
-EOF
-"
-
+EOF"
 fakechroot fakeroot chroot $BUILD_DIR/.root apt-get update >/dev/null
-fakechroot fakeroot chroot $BUILD_DIR/.root apt-get install -y --force-yes language-pack-en >/dev/null
-fakechroot fakeroot chroot $BUILD_DIR/.root apt-get install -y --force-yes coreutils tar build-essential autoconf >/dev/null
-fakechroot fakeroot chroot $BUILD_DIR/.root apt-get install -y --force-yes libxslt-dev libxml2-dev libglib2.0-dev libbz2-dev libreadline5-dev zlib1g-dev libevent-dev libssl-dev libpq-dev libncurses5-dev libcurl4-openssl-dev libjpeg-dev libmysqlclient-dev >/dev/null
-fakechroot fakeroot chroot $BUILD_DIR/.root apt-get install -y --force-yes daemontools >/dev/null
-fakechroot fakeroot chroot $BUILD_DIR/.root apt-get install -y --force-yes curl netcat telnet wget >/dev/null
-fakechroot fakeroot chroot $BUILD_DIR/.root apt-get install -y --force-yes ed nano bison >/dev/null
-fakechroot fakeroot chroot $BUILD_DIR/.root apt-get install -y --force-yes strace gdb >/dev/null
-fakechroot fakeroot chroot $BUILD_DIR/.root apt-get install -y --force-yes imagemagick libmagick9-dev >/dev/null
+fakechroot fakeroot chroot $BUILD_DIR/.root apt-get install -y --force-yes coreutils tar build-essential autoconf >/dev/null 2>&1
+fakechroot fakeroot chroot $BUILD_DIR/.root apt-get install -y --force-yes ruby1.9.1 ruby1.9.1-dev >/dev/null 2>&1
 echo "packages updated" | indent
 
 cd $BUILD_DIR/.root
