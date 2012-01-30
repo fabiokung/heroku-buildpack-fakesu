@@ -9,7 +9,6 @@ cd $olddir
 
 command="/bin/bash --rcfile $ROOT_DIR/root/.bashrc"
 while [ $# -gt 0 ]; do
-    echo $#
     if [ "-c" == $1 ]; then
         shift
         command="$@"
