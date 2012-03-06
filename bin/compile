@@ -85,6 +85,7 @@ ln -s ../ app
 
 mkdir -p $BUILD_DIR/bin
 cp $BUILDPACK_DIR/bin/fakesu $BUILD_DIR/bin
+cp $BUILDPACK_DIR/bin/aws $BUILD_DIR/bin
 
 exit 0
 
