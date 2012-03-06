@@ -7,14 +7,30 @@ TOOLS_DIR=`cd $(dirname $0); cd ../.tools; pwd`
 FAKECHROOT_DIR=$TOOLS_DIR/fakechroot
 cd $olddir
 
-command="/bin/bash --rcfile $ROOT_DIR/root/.bashrc"
 while [ $# -gt 0 ]; do
-    if [ "-c" == $1 ]; then
+    if [ "capture" == $1 ]; then
+        name="$2"
+        mksquashfs /app/.root /tmp/user-stack.img
+        aws mkdir user-stacks
+        aws put user-stacks/$name/disk.img /tmp/user-stack.img
+        rm -rf /tmp/user-stack.img
+        echo "user stack $name captured."
+        exit 0
+    elif [ "load" == $1 ]; then
+        name="$2"
+        rm -rf /app/.root
+        aws get user-stacks/$name/disk.img /tmp/user-stack.img
+        unsquashfs -d /app/.root /tmp/user-stack.img
+        rm -rf /tmp/user-stack.img
+        echo "user stack $name ready to be used."
+        exit 0
+    elif [ "-c" == $1 ]; then
         shift
         command="$@"
         break
     else
         shift
+        command="/bin/bash --rcfile $ROOT_DIR/root/.bashrc"
     fi
 done
 
