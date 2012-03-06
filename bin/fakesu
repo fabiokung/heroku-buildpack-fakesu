@@ -7,6 +7,7 @@ TOOLS_DIR=`cd $(dirname $0); cd ../.tools; pwd`
 FAKECHROOT_DIR=$TOOLS_DIR/fakechroot
 cd $olddir
 
+command="/bin/bash --rcfile $ROOT_DIR/root/.bashrc"
 while [ $# -gt 0 ]; do
     if [ "capture" == $1 ]; then
         name="$2"
@@ -30,7 +31,6 @@ while [ $# -gt 0 ]; do
         break
     else
         shift
-        command="/bin/bash --rcfile $ROOT_DIR/root/.bashrc"
     fi
 done
 
