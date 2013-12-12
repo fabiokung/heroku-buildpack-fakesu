@@ -1,3 +1,7 @@
+# WARNING: this is currently (and unfortunately) unmaintained
+
+I left the code available here to hopefully inspire other people.
+
 # (fake) su
 
 Heroku buildpack that creates a chroot jail, and allows users to run commands as (fake)**root** inside it.
